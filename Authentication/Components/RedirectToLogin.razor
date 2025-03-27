@@ -1,0 +1,28 @@
+﻿
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JsRuntime
+@inject AuthenticationStateProvider AuthProvider
+@inject ILocalStorageService LocalStorage
+
+@code {
+
+    private string? _sub;
+    private bool _isAuthenticated = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+
+        var a = await LocalStorage.GetItemAsStringAsync("a");
+        
+        if (string.IsNullOrWhiteSpace(a) || a.Equals("null")) 
+        {
+            NavigationManager.NavigateTo("/login");
+        } 
+    }
+}

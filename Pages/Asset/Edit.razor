@@ -1,0 +1,72 @@
+@page "/asset/edit/{id:long}"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Money.Shared.DTOs.Asset
+@using Money.Shared.Enums
+@using Money.Shared.Extenstions
+@using Money.Shared.Mappers
+
+@using MudBlazor
+
+@inject IAssetService AssetService
+@inject NavigationManager NavigationManager
+
+<MudPaper Style="background-color: white; padding-bottom: 20px; box-shadow:none;" Square="true">
+    <MudStack Row="true" Spacing="0">
+        <MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" Href="/asset"/>
+        <MudText Class="my-4" Typo="Typo.subtitle1" Color="Color.Default">자산정보</MudText>
+    </MudStack>
+    
+    <EditForm Context="context" Model="_asset">
+        <DataAnnotationsValidator />
+        <MudStack Class="px-4" Spacing="2">
+            
+            <MudSelect For=@(() => _asset.AssetType) T="AssetType" @bind-Value="_asset.AssetType" Margin="Margin.Dense" Label="그룹" ShrinkLabel>
+                @foreach (var assetType in Enum.GetValues<AssetType>())
+                {
+                    <MudSelectItem Value="assetType">
+                        <MudText Typo="Typo.body2">@assetType.GetDisplayName()</MudText>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        
+            <MudTextField Typo="Typo.body2" @bind-Value="_asset.Name" Margin="Margin.Normal" Label="이름" ShrinkLabel For=@(() => _asset.Name)/>
+            <MudTextField Typo="Typo.body2" @bind-Value="_asset.Amount" Margin="Margin.Normal" Label="금액" ShrinkLabel For=@(() => _asset.Amount)/>
+            <MudStack Row="true">
+                <MudButton Class="ml-auto w-25" FullWidth="true" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Default" OnClick="() => DeleteAsync() ">삭제</MudButton>
+                <MudButton Class="ml-auto w-75" FullWidth="true" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" OnClick="() => EditAsync(context)">저장</MudButton>
+            </MudStack>
+            
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    AssetUpdateDto _asset = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var asset = await AssetService.GetAssetByIdAsync(Id);
+        _asset = asset.ToAssetUpdateDto();
+    }
+
+    async Task EditAsync(EditContext context)
+    {
+        var isValid = context.Validate();
+        if(!isValid) return;
+        await AssetService.UpdateAssetAsync(_asset);
+        NavigationManager.NavigateTo("/asset");
+    }
+
+    async Task DeleteAsync()
+    {
+        await AssetService.DeleteAssetAsync(Id);
+        NavigationManager.NavigateTo("/asset");
+    }
+}

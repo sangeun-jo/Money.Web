@@ -1,0 +1,40 @@
+@using Money.Shared.DTOs.Asset
+@using Money.Web.Pages.Asset
+@inject NavigationManager NavigationManager
+
+<MudStack Spacing="0" Class="pt-2 border-bottom ">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.body2" Class="py-2 px-4">@Title</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.body2" Color="Color.Info" Class="py-2 px-4">@($"{Assets?.Sum(x => x.Amount):#,##0}원")</MudText>
+    </MudStack>
+    @if (Assets?.Count() > 0)
+    {
+        foreach (var asset in Assets)
+        {
+            <MudPaper @onclick="@(() => Edit(asset.Id))" Class="py-3 px-4 shadow-none border-top" Square="true">
+                <MudStack  Row="true" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body2">@asset.Name</MudText>
+                    <MudSpacer/>
+                    <MudText Typo="Typo.body2">@($"{asset.Amount:#,##0}원")</MudText>
+                </MudStack>
+            </MudPaper>
+        }
+    }
+    
+</MudStack>
+
+
+@code {
+    
+    [Parameter, EditorRequired]
+    public string? Title { get; set; }
+
+    [Parameter, EditorRequired]
+    public IEnumerable<AssetDisplayDto> Assets { get; set; }
+
+    private void Edit(long id)
+    {
+        NavigationManager.NavigateTo($"/asset/edit/{id}");
+    }
+}

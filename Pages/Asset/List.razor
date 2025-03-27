@@ -1,0 +1,45 @@
+@page "/asset"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Money.Web.Components
+@using Money.Shared.DTOs.Asset
+@using Money.Shared.Enums
+@using Money.Shared.Extenstions
+
+@inject IAssetService AssetService
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100" Spacing="0">
+        <MudToolBar Dense="true" Style="background-color: white; box-shadow: none;">
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">자산</MudText>
+            <MudSpacer />
+            <MudIconButton Href="/asset/add" Style="padding: 2px;" Color="Color.Dark" Icon="@Icons.Material.Filled.PlaylistAdd"></MudIconButton>
+        </MudToolBar>
+        <AppBarTrio 
+            Income="@(_assets?.Where(x => x.AssetType != AssetType.CreditCard).Sum(x => x.Amount) ?? 0)" 
+            Expense="@(_assets?.Where(x => x.AssetType == AssetType.CreditCard).Sum(x => x.Amount) ?? 0)" />
+    </MudStack>
+</MudAppBar>
+
+
+<MudStack Style="padding-top:108px;">
+    @foreach (var assetType in _assets.Select(x => x.AssetType).Distinct())
+    {
+        <AssetRow Title="@assetType.GetDisplayName()" Assets="_assets?.Where(x => x.AssetType == assetType)"/>
+    }
+</MudStack>
+
+
+<br/><br/><br/>
+<br/><br/><br/>
+@code {
+    private IEnumerable<AssetDisplayDto>? _assets = new List<AssetDisplayDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _assets = await AssetService.GetAllAssetAsync(null);
+    }
+
+}

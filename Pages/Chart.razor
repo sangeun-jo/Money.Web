@@ -1,0 +1,191 @@
+@page "/chart"
+@page "/chart/{date}"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Money.Shared.DTOs.Chart
+@using Money.Shared.Enums
+
+@using MudBlazor
+@using System.Globalization
+
+@inject IChartService ChartService
+@inject NavigationManager NavigationManager
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100 border-bottom" Spacing="0">
+        <MudToolBar Dense="true" Class="pa-0" Style="background-color: white; box-shadow: none;">
+            <MudIconButton Icon="@Icons.Material.Outlined.NavigateBefore" OnClick="GoToBefore"/>
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">@($"{_curDate.Year}년 {_curDate.Month}월")</MudText>
+            <MudIconButton Icon="@Icons.Material.Outlined.NavigateNext" OnClick="GoToNext"/>
+        </MudToolBar>
+    </MudStack>
+</MudAppBar>
+
+<MudTabs Style="padding-top: 48px; " Centered="true" SliderColor="Color.Error" Border="true">
+    <MudTabPanel Text="지출" Style="--mud-palette-primary: var(--mud-palette-error);}">
+        @if (_expenseChart?.Count() > 0)
+        {
+            <MudPaper Class="pa-5 shadow-none">
+                <MudChart ChartType="ChartType.Pie" ChartOptions="_chartOptions" InputData="@_expenseChart?.Select(x => x.Percent).ToArray()" InputLabels="@_expenseChart?.Select(x => $"{x.Name} {x.Percent*100:#0.#0}%").ToArray()" Width="300px" Height="300px"/>
+            </MudPaper>
+            
+            <MudStack Spacing="0" Class="pt-4 border-bottom ">
+                @foreach (var (chart, color) in _expenseChart.Zip(_colors))
+                {
+                    <MudPaper Class="py-3 px-4 shadow-none border-top" Square="true">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
+                            <MudChip Style=@($"width: 40px; background-color:{color} !important") T="string" Label="true" Size="Size.Small">
+                                @($"{chart.Percent * 100:##0}%")
+                            </MudChip>
+                            <MudText Typo="Typo.body2">@chart.Name</MudText>
+                            <MudSpacer/>
+                            <MudText Typo="Typo.body2">@($"{chart.CategorySum:#,##0}원")</MudText>
+                        </MudStack>
+                    </MudPaper>
+                }
+            </MudStack>
+        }
+        else
+        {
+            <MudStack Spacing="0" Style="margin-top: 108px;">
+                <MudImage Style="opacity: 25%; max-width: 150px;" Src="/images/pig.png" Class="mx-auto w-25" />
+                <MudText Style="color: darkgray" Align="Align.Center"  Typo="Typo.caption">내역이 없습니다</MudText>
+            </MudStack>
+        }
+
+
+    </MudTabPanel>
+    <MudTabPanel Text="수입" Style="--mud-palette-primary: var(--mud-palette-error);}">
+        @if (_incomeChart?.Count() > 0)
+        {
+            <MudPaper Class="pa-5 shadow-none">
+                <MudChart ChartType="ChartType.Pie" ChartOptions="_chartOptions" InputData="@_incomeChart?.Select(x => x.Percent).ToArray()" InputLabels="@_incomeChart?.Select(x => $"{x.Name} {x.Percent*100:#0.#0}%").ToArray()" Width="300px" Height="300px"/>
+            </MudPaper>
+            
+            <MudStack Spacing="0" Class="pt-4 border-bottom ">
+                @foreach (var (chart, color) in _incomeChart.Zip(_colors))
+                {
+                    <MudPaper Class="py-3 px-4 shadow-none border-top" Square="true">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
+                            <MudChip Style=@($"width: 40px; background-color:{color} !important") T="string" Label="true" Size="Size.Small">
+                                @($"{chart.Percent * 100:##0}%")
+                            </MudChip>
+                            <MudText Typo="Typo.body2">@chart.Name</MudText>
+                            <MudSpacer/>
+                            <MudText Typo="Typo.body2">@($"{chart.CategorySum:#,##0}원")</MudText>
+                        </MudStack>
+                    </MudPaper>
+                }
+            </MudStack>
+            
+        }
+        else
+        {
+            <MudStack Spacing="0" Style="margin-top: 108px;">
+                <MudImage Style="opacity: 25%; max-width: 150px;" Src="/images/pig.png" Class="mx-auto w-25" />
+                <MudText Style="color: darkgray" Align="Align.Center"  Typo="Typo.caption">내역이 없습니다</MudText>
+            </MudStack>
+        }
+
+    </MudTabPanel>
+</MudTabs>
+
+<br/><br/><br/>
+<br/><br/><br/>
+
+@code {
+    
+    [Parameter]
+    public string Date { get; set; }
+    
+    private readonly CultureInfo? _culture = CultureInfo.CreateSpecificCulture("ko-KR");
+    private DateTime _curDate = DateTime.Today; 
+    
+    
+    MoneyType _moneyType = MoneyType.Expense;
+    IEnumerable<ChartDisplayDto>? _incomeChart; 
+    IEnumerable<ChartDisplayDto>? _expenseChart;
+    ChartOptions _chartOptions = new();
+    
+    private string[] _colors = new[]
+    {
+        "#FF69B4", // 밝은 핫핑크
+        "#4FC3F7", // 밝은 하늘색
+        "#81C784", // 밝은 연두
+        "#FFB74D", // 밝은 주황
+        "#BA68C8", // 밝은 보라
+        "#4DD0E1", // 밝은 청록
+        "#FF8A80", // 밝은 코랄
+        "#7986CB", // 밝은 남색
+        "#A1887F", // 밝은 브라운
+        "#90A4AE", // 밝은 블루그레이
+        "#F06292", // 밝은 분홍
+        "#80CBC4", // 밝은 틸
+        "#FFB74D", // 밝은 황토색
+        "#9575CD", // 라벤더
+        "#AED581", // 라임그린
+        "#FFE082", // 밝은 골드
+        "#80D8FF", // 매우 밝은 파랑
+        "#FF8A65", // 연한 주황
+        "#64B5F6", // 밝은 청색
+        "#9CCC65", // 밝은 라임
+        "#F48FB1", // 연한 분홍
+        "#80DEEA", // 밝은 시안
+        "#DCE775", // 밝은 라임옐로우
+        "#CE93D8", // 연한 보라
+        "#EF9A9A", // 연한 빨강
+        "#A5D6A7", // 연한 초록
+        "#FFE0B2", // 피치
+        "#B2DFDB", // 연한 틸
+        "#9FA8DA", // 연한 인디고
+        "#FFCC80"  // 연한 주황
+    };
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _chartOptions.ShowLegendLabels = true;
+        _chartOptions.ShowLabels = true;
+        _chartOptions.ShowLegend = false;
+        _chartOptions.ShowToolTips = true;
+        
+        _chartOptions.ChartPalette = _colors;
+        
+        _curDate = string.IsNullOrEmpty(Date) 
+            ? DateTime.Today 
+            : DateTime.ParseExact(Date, "yyyy-MM", null);
+        
+        _incomeChart = await ChartService.GetMonthChartAsync(_curDate.ToString("yyyy-MM"), MoneyType.Income);
+        _expenseChart = await ChartService.GetMonthChartAsync(_curDate.ToString("yyyy-MM"), MoneyType.Expense);
+
+        _incomeChart = _incomeChart?.OrderBy(x => x.Percent).Reverse();
+        _expenseChart = _expenseChart?.OrderBy(x => x.Percent).Reverse();
+
+    }
+    
+    //색상 생성 
+    private string[] GenerateColors(int count)
+    {
+        var colors = new string[count];
+        for (int i = 0; i < count; i++)
+        {
+            // HSL 색상 모델을 사용하여 균일한 색상 분포 생성
+            double hue = (360.0 / count) * i;
+            colors[i] = $"hsl({hue}, 70%, 50%)";
+        }
+        return colors;
+    }
+    
+    private void GoToBefore()
+    {
+        NavigationManager.NavigateTo($"/chart/{_curDate.AddMonths(-1):yyyy-MM}");
+    }
+
+    private void GoToNext()
+    {
+        NavigationManager.NavigateTo($"/chart/{_curDate.AddMonths(1):yyyy-MM}");
+    }
+
+
+}

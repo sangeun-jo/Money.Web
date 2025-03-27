@@ -1,0 +1,95 @@
+﻿@page "/setting"
+
+@attribute [Authorize]
+
+@using Money.Web.Authentication.States
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorageService
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100" Spacing="0">
+        <MudToolBar Dense="true" Style="background-color: white; box-shadow: none;">
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">설정</MudText>
+        </MudToolBar>
+        <MudPaper Style="padding-top: 64px;" Class="py-3 px-4 shadow-none border-top" Square="true">
+            <MudStack  Row="true" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.body2" @onclick="@(() => { NavigationManager.NavigateTo("https://today-i-learn.tistory.com"); })">개발자 블로그</MudText>
+            </MudStack>
+        </MudPaper>
+        <MudPaper Class="py-3 px-4 shadow-none" Square="true">
+            <MudStack  Row="true" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.body2">버전</MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.body2">v1.0.0</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</MudAppBar>
+
+
+<MudStack Style="padding-top: 148px; " Spacing="0" Class="border-bottom ">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.body2" Class="py-2 px-4">분류관리</MudText>
+    </MudStack>
+    
+    <MudPaper @onclick="@(() => { NavigationManager.NavigateTo("/category/income"); })" Class="py-3 px-4 shadow-none border-top" Square="true">
+        <MudStack  Row="true" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2">수입분류관리</MudText>
+        </MudStack>
+    </MudPaper>
+    <MudPaper @onclick="@(() => { NavigationManager.NavigateTo("/category/expense"); })" Class="py-3 px-4 shadow-none" Square="true">
+        <MudStack  Row="true" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2">지출분류관리</MudText>
+        </MudStack>
+    </MudPaper>
+</MudStack>
+
+<MudStack Style="padding-top: 20px; " Spacing="0" Class="border-bottom ">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.body2" Class="py-2 px-4">데이터관리</MudText>
+    </MudStack>
+    
+    <MudPaper  Class="py-3 px-4 shadow-none border-top" Square="true">
+        <MudStack  Row="true" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2">데이터 내보내기</MudText>
+        </MudStack>
+    </MudPaper>
+    <MudPaper Class="py-3 px-4 shadow-none" Square="true">
+        <MudStack  Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+            <MudText Typo="Typo.body2">구글 계정</MudText>
+            <MudSpacer />
+            <MudText Typo="Typo.body2">@_email</MudText>
+        </MudStack>
+    </MudPaper>
+    
+    <MudPaper @onclick="@Logout" Class="py-3 px-4 shadow-none" Square="true">
+        <MudStack  Row="true" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2">로그아웃</MudText>
+        </MudStack>
+    </MudPaper>
+</MudStack>
+
+@code {
+
+    private string _email = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var userInfo = await UserService.GetUserAsync();
+        _email = userInfo?.UserEmail ?? "계정없음";
+    }
+
+    private async Task Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("a");
+        await LocalStorageService.RemoveItemAsync("r");
+        
+        ((CustomAuthStateProvider)AuthStateProvider).NotifyAuthenticationChanged();
+        NavigationManager.NavigateTo("login", true);
+    }
+}

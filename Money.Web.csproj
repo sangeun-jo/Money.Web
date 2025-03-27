@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+    
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishTrimmed>true</PublishTrimmed>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        
+    </PropertyGroup>
+    
+    <ItemGroup>
+        
+        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.0" PrivateAssets="all" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
+        <PackageReference Include="MudBlazor" Version="8.0.0-rc.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Money.Shared\Money.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        
+      <_ContentIncludedByDefault Remove="Pages\Test\List.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Category\Expense\List.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Category\Income\List.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Old\History\AddOld.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Old\History\EditOld.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".github\workflows\deploy.yml" />
+    </ItemGroup>
+
+</Project>

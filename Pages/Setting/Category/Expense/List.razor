@@ -1,0 +1,55 @@
+@page "/category/expense"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Money.Shared.DTOs.Category
+@using Money.Shared.Enums
+
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100" Spacing="0">
+        <MudToolBar Class="px-0 border-bottom" Dense="true" Style="background-color: white; box-shadow: none;">
+            <MudIconButton  Icon="@Icons.Material.Outlined.ArrowBack" Href=@($"/setting")/>
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">지출분류</MudText>
+            <MudSpacer/>
+            <MudIconButton  Icon="@Icons.Material.Outlined.Add" Href=@($"/category/expense/add")/>
+        </MudToolBar>
+    </MudStack>
+</MudAppBar>
+
+<MudStack Style="padding-top: 48px; " Spacing="0" Class="border-bottom ">
+    @foreach (var category in _categories)
+    {
+        <MudPaper  Class="py-3 px-4 shadow-none" Square="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudIconButton OnClick="@(() => DeleteAsync(category.Id))" Class="pa-0" Color="Color.Error" Icon="@Icons.Material.Outlined.RemoveCircle"/>
+                <MudText Typo="Typo.body2">@category.Name</MudText>
+                <MudSpacer />
+                <MudIconButton Size="Size.Medium" OnClick="@(() => { NavigationManager.NavigateTo($"/category/expense/edit/{category.Id}"); })" Class="pa-0" Style="color:darkgray" Icon="@Icons.Material.Filled.Edit"/>
+            </MudStack>
+        </MudPaper>
+    }
+    
+</MudStack>
+
+<br/><br/><br/>
+<br/><br/><br/>
+
+@code {
+    IEnumerable<CategoryDisplayDto>? _categories = new List<CategoryDisplayDto>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _categories = await CategoryService.GetAllCategoryAsync(MoneyType.Expense);
+    }
+
+    async Task DeleteAsync(long id)
+    {
+        await CategoryService.DeleteCategoryAsync(id);
+        NavigationManager.Refresh();
+    }
+    
+}

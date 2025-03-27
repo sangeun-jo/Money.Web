@@ -1,0 +1,30 @@
+@using MudBlazor
+
+<MudPaper Square="true" Class="shadow-none border-top border-bottom ">
+    <MudStack Spacing="0" Justify="Justify.SpaceEvenly" Row="true" Class="py-2">
+        <MudStack Spacing="0">
+            <MudText Align="Align.Center" Typo="Typo.caption">수입</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle2" Color="@Color.Info">@($"{Income:##,##0}원")</MudText>
+        </MudStack>
+
+        <MudStack Spacing="0">
+            <MudText Align="Align.Center" Typo="Typo.caption">지출</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle2" Color="@Color.Error">@($"-{Expense:##,##0}원")</MudText>
+        </MudStack>
+
+        <MudStack Spacing="0">
+            <MudText Align="Align.Center" Typo="Typo.caption">합계</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle2" Color="@Color.Default">@($"{Income - Expense:##,##0}원")</MudText>
+        </MudStack>
+    </MudStack>
+</MudPaper>
+
+@code {
+    
+    [Parameter, EditorRequired] 
+    public int Income { get; set; }
+    
+    [Parameter, EditorRequired] 
+    public int Expense { get; set; }
+    
+}

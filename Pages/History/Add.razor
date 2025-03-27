@@ -1,0 +1,106 @@
+@page "/history/add"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Money.Shared.DTOs.History
+@using Money.Shared.DTOs.Category
+@using Money.Shared.Enums
+@using Money.Shared.Extenstions
+@using Money.Shared.Interfaces
+@using MudBlazor
+
+@inject IHistoryService HistoryService
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100 border-bottom"  Spacing="0">
+        <MudToolBar Class="px-0" Dense="true" Style="background-color: white; box-shadow: none;">
+            <MudIconButton  Icon="@Icons.Material.Outlined.ArrowBack" Href=@($"/history/{_history.CreatedDate?.ToString("yyyy-MM")}")/>
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">내역 등록</MudText>
+        </MudToolBar>
+    </MudStack>
+</MudAppBar>
+
+<MudPaper Style="padding-top: 64px; background-color: white;padding-bottom:20px;box-shadow:none;" Square="true">
+    <EditForm Context="context" Model="@_history">
+        <DataAnnotationsValidator/>
+        <MudStack Class="px-4" Spacing="2">
+            <MudStack Row="true">
+                <MudButton FullWidth="true"
+                           Variant="Variant.Outlined"
+                           Color="@(_history.MoneyType == MoneyType.Expense ? Color.Error : Color.Default)"
+                           OnClick="() => { _history.MoneyType = MoneyType.Expense; }"
+                           DropShadow="false">
+                    @MoneyType.Expense.GetDisplayName()
+                </MudButton>
+                <MudButton FullWidth="true"
+                           Variant="Variant.Outlined"
+                           Color="@(_history.MoneyType == MoneyType.Income ? Color.Error : Color.Default)"
+                           OnClick="() => { _history.MoneyType = MoneyType.Income; }"
+                           DropShadow="false">
+                    @MoneyType.Income.GetDisplayName()
+                </MudButton>
+                <MudButton FullWidth="true"
+                           Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           DropShadow="false">
+                    이체
+                </MudButton>
+            </MudStack>
+
+            <MudStack Row="true">
+                <MudDatePicker @bind-Date="_history.CreatedDate" Margin="Margin.Normal" Label="날짜" PickerVariant="PickerVariant.Dialog" Color="Color.Error"/>
+                <MudTimePicker @bind-Time="_time" AmPm="true" Margin="Margin.Normal" Label="시간" PickerVariant="PickerVariant.Dialog" Color="Color.Error"/>
+            </MudStack>
+
+            <MudSelect aTypo="Typo.body2" @bind-Value="_history.CategoryId" Margin="Margin.Dense" ShrinkLabel Label="카테고리" For="@(() => _history.CategoryId)">
+                @foreach (var category in _categories.Where(x => x.MoneyType == _history.MoneyType))
+                {
+                    <MudSelectItem Value="@((int?)category.Id)">@category.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudTextField Typo="Typo.body2" @bind-Value="_history.Place" ShrinkLabel Margin="Margin.Normal" T="string" Label="거래처"/>
+
+            <MudNumericField Typo="Typo.body2" @bind-Value="_history.Amount" ShrinkLabel Margin="Margin.Normal" T="int?" Label="금액" For="@(() => _history.Amount)"/>
+
+            <MudTextField AutoGrow Typo="Typo.body2" @bind-Value="_history.Note" ShrinkLabel Margin="Margin.Normal" T="string" Label="내용"/>
+
+            <MudButton FullWidth="true" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="@(() => AddAsync(context))">저장</MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+
+@code {
+    private HistoryCreateDto _history = new HistoryCreateDto
+    {
+        CreatedDate = DateTime.Today.Date
+    };
+
+    // enumerable vs list 차이?? 
+    private IEnumerable<CategoryDisplayDto>? _categories = new List<CategoryDisplayDto>();
+    protected override async Task OnInitializedAsync()
+    {
+        _categories = await CategoryService.GetAllCategoryAsync( null);
+    }
+    
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    
+    
+    
+    private async Task AddAsync(EditContext context)
+    {
+        _history.CreatedDate = _history.CreatedDate?.Date + _time;
+        
+        var isValid = context.Validate();
+        if(!isValid) return;
+        
+        await HistoryService.CreateHistoryAsync(_history);
+        NavigationManager.NavigateTo("/history"); 
+    }
+}

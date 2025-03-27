@@ -1,0 +1,47 @@
+﻿
+@using Money.Shared.Enums
+@inherits LayoutComponentBase
+
+<MudThemeProvider/>
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout >
+    
+    
+    @Body
+    <MudAppBar Bottom="true" Fixed="true" Style="background: rgba(255, 255, 255, 0.2); ;backdrop-filter: blur(4px);-webkit-backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.3); ">
+
+        <MudStack Spacing="0">
+            <MudIconButton href="/history" OnClick="() => { _currentMenu = MenuType.Home; }" Class="ma-0 pa-1" Icon="@Icons.Material.Outlined.Book" Color="@(_currentMenu == MenuType.Home ? Color.Error : Color.Dark)" Edge="Edge.False"/>
+            <MudText Align="Align.Center" Typo="Typo.caption" Color="@(_currentMenu == MenuType.Home ? Color.Error : Color.Dark)">가계부</MudText>
+        </MudStack>
+
+        <MudSpacer/>
+
+        <MudStack Spacing="0">
+            <MudIconButton href="/chart" OnClick="() => { _currentMenu = MenuType.Chart; }" Class="ma-0 pa-1" Icon="@Icons.Material.Outlined.InsertChart" Color="@(_currentMenu == MenuType.Chart ? Color.Error : Color.Dark)" Edge="Edge.False"/>
+            <MudText Align="Align.Center" Typo="Typo.caption" Color="@(_currentMenu == MenuType.Chart ? Color.Error : Color.Dark)">통계</MudText>
+        </MudStack>
+
+        <MudSpacer/>
+
+        <MudStack Spacing="0">
+            <MudIconButton href="/asset" OnClick="() => { _currentMenu = MenuType.Asset; }" Class="ma-0 pa-1" Icon="@Icons.Material.Outlined.AttachMoney" Color="@(_currentMenu == MenuType.Asset ? Color.Error : Color.Dark)" Edge="Edge.False"/>
+            <MudText Align="Align.Center" Typo="Typo.caption" Color="@(_currentMenu == MenuType.Asset ? Color.Error : Color.Dark)">자산</MudText>
+        </MudStack>
+
+        <MudSpacer/>
+
+        <MudStack Spacing="0">
+            <MudIconButton href="/setting" OnClick="() => { _currentMenu = MenuType.Setting; }" Class="ma-0 pa-1" Icon="@Icons.Material.Filled.MoreHoriz" Color="@(_currentMenu == MenuType.Setting ? Color.Error : Color.Dark)" Edge="Edge.False"/>
+            <MudText Align="Align.Center" Typo="Typo.caption" Color="@(_currentMenu == MenuType.Setting ? Color.Error : Color.Dark)">더보기</MudText>
+        </MudStack>
+
+    </MudAppBar>
+</MudLayout>
+
+@code{
+    MenuType _currentMenu = MenuType.Home;
+}

@@ -1,0 +1,60 @@
+@page "/category/expense/edit/{id:int}"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Money.Shared.DTOs.Category
+@using Money.Shared.Enums
+@using Money.Shared.Interfaces
+
+@using MudBlazor
+
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+<MudAppBar ToolBarClass="h-auto ma-0 pa-0" Style="background-color: white; box-shadow: none; ">
+    <MudStack Class="w-100" Spacing="0">
+        <MudToolBar Class="px-0 border-bottom" Dense="true" Style="background-color: white; box-shadow: none;">
+            <MudIconButton  Icon="@Icons.Material.Outlined.ArrowBack" Href=@($"/category/expense")/>
+            <MudText Typo="Typo.subtitle1" Color="Color.Dark">지출분류 수정</MudText>
+        </MudToolBar>
+    </MudStack>
+</MudAppBar>
+
+<MudPaper Style="padding-top: 64px;background-color: white;padding-bottom:20px;box-shadow:none;" Square="true">
+    <EditForm Context="context" Model="_category">
+        <DataAnnotationsValidator />
+        <MudStack Class="px-4" Spacing="2">
+            <MudTextField @bind-Value="_category.Name" For="@(() => _category.Name)"/>
+            <MudButton OnClick="@(() => EditAsync(context))" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" FullWidth="true">저장</MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+
+    CategoryUpdateDto _category = new CategoryUpdateDto()
+    {
+        MoneyType = MoneyType.Expense
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var category = await CategoryService.GetCategoryByIdAsync(Id);
+        _category.Id = Id;
+        _category.Name = category?.Name;
+    }
+
+    async Task EditAsync(EditContext context)
+    {
+        var isValid = context.Validate();
+        if(!isValid) return;
+
+        await CategoryService.UpdateCategoryAsync(_category);
+        NavigationManager.NavigateTo("/category/expense");
+    }
+
+}

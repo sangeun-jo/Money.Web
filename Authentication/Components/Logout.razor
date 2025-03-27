@@ -1,0 +1,24 @@
+﻿@page "/logout"
+@using Money.Web.Authentication.States
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorageService
+@code 
+{
+    protected override async Task OnInitializedAsync()
+    {
+        await LogoutAsync();
+        NavigationManager.NavigateTo("login");
+    }
+    
+    private async Task LogoutAsync()
+    {
+        await LocalStorageService.RemoveItemAsync("a");
+        await LocalStorageService.RemoveItemAsync("r");
+        ((CustomAuthStateProvider)AuthStateProvider).NotifyAuthenticationChanged();
+    }
+}

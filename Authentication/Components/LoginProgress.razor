@@ -1,0 +1,51 @@
+@page "/"
+
+@using Money.Web.Authentication.States
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using Money.Shared.Interfaces
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthState AuthState
+@inject IAuthService AuthService
+
+<p>로그인 진행중</p>
+
+@code {
+
+    [Parameter, SupplyParameterFromQuery]
+    public string? AccessToken { get; set; }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+    // 사용자 페이지 방문 (AccessToken 없음)
+        if (string.IsNullOrWhiteSpace(AccessToken) || AccessToken!.Equals("null"))
+        {
+            if(AuthState.IsAuthenticated) 
+                NavigationManager.NavigateTo("/login");
+        } 
+        else  // 로그인 콜백인 경우. (AccessToken 파라미터 있음)
+        {
+            await SetTokenAsync(AccessToken);
+    // 로그인 상태 변경 
+            ((CustomAuthStateProvider)AuthenticationStateProvider)
+                .NotifyAuthenticationChanged();
+        }
+        
+        NavigationManager.NavigateTo("/history");
+    }
+    
+    private async Task SetTokenAsync(string accessToken)
+    {
+    // 1. 엑세스 토큰 세팅
+        await LocalStorageService.SetItemAsStringAsync("a", accessToken);
+
+    // 2. 리프레시 토큰 세팅 
+        var token = await AuthService.GetCredentialAsync();
+        if (token is null)  throw new Exception("사용자 인증 정보가 없습니다.");
+
+        await LocalStorageService.SetItemAsStringAsync("r", token.RefreshToken!);
+    }
+
+}

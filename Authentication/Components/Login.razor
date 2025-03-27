@@ -1,0 +1,29 @@
+@page "/login"
+
+@layout EmptyLayout
+
+@using Money.Shared.DTOs.Auth
+@using Money.Web.Layout
+
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+
+<MudStack Style="position:fixed; top:0; margin-top: 150px; width: 100%; " Spacing="20" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h5" Color="Color.Error"><b>로그인</b></MudText>
+    
+    <MudButton FullWidth Style="width: 95%; place-items: center;" Variant="Variant.Filled" Color="Color.Error" OnClick="GoogleLoginAsync">
+        구글로 로그인
+    </MudButton>
+</MudStack>
+
+@code {
+
+    private AuthGetDto _request = new();
+    
+    private async Task GoogleLoginAsync()
+    {
+        var loginUrl = await AuthService.GetGoogleAuthorizationUrl();
+        if (loginUrl is null) throw new Exception("문제가 발생했습니다. 잠시후 다시 시도해주세요.");
+        NavigationManager.NavigateTo(loginUrl);
+    }
+}

@@ -1,0 +1,64 @@
+@page "/asset/add"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Money.Shared.DTOs.Asset
+@using Money.Shared.Enums
+@using Money.Shared.Extenstions
+
+@inject IAssetService AssetService
+@inject NavigationManager NavigationManager
+
+<style>
+    .mud-primary-hover {
+        background-color: var(--mud-palette-error-hover) !important;
+    }
+    
+    .mud-primary-text {
+        color: var(--mud-palette-error) !important;
+        --mud-ripple-color: var(--mud-palette-error) !important;
+    }
+    
+</style>
+
+<MudPaper Style="background-color: white; padding-bottom: 20px; box-shadow:none;" Square="true">
+    <MudStack Row="true" Spacing="0">
+        <MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" Href="/asset"/>
+        <MudText Class="my-4" Typo="Typo.subtitle1" Color="Color.Default">자산정보</MudText>
+    </MudStack>
+    
+    <EditForm Context="context" Model="_asset">
+        <DataAnnotationsValidator />
+        <MudStack Class="px-4" Spacing="2">
+            
+            <MudSelect AdornmentColor="Color.Error" Underline="false" For="@(()=> _asset.AssetType)" T="AssetType" @bind-Value="_asset.AssetType" Margin="Margin.Dense" Label="그룹" ShrinkLabel>
+                @foreach (var assetType in Enum.GetValues<AssetType>())
+                {
+                    <MudSelectItem Value="assetType">
+                        <MudText Typo="Typo.body2">@assetType.GetDisplayName()</MudText>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        
+            <MudTextField Underline="false" Placeholder="자산 이름을 입력하세요." Typo="Typo.body2" @bind-Value="_asset.Name" Margin="Margin.Normal" Label="이름" ShrinkLabel For="@(()=> _asset.Name)"/>
+            <MudTextField Underline="false" Placeholder="자산 금액을 입력하세요." Typo="Typo.body2" @bind-Value="_asset.Amount" Margin="Margin.Normal" Label="금액" ShrinkLabel For="@(()=> _asset.Amount)"/>
+            <MudButton FullWidth="true" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" OnClick="() => AddAsync(context) ">저장</MudButton>
+        </MudStack>
+    </EditForm>
+    
+</MudPaper>
+
+@code {
+    AssetCreateDto _asset = new();
+    
+    async Task AddAsync(EditContext context)
+    {
+        var isValid = context.Validate();
+        if(!isValid) return;
+        
+        await AssetService.CreateAssetAsync(_asset);
+        NavigationManager.NavigateTo("/asset");
+    }
+}

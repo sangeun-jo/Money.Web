@@ -24,6 +24,13 @@ jobs:
       - name: Publish Blazor WebAssembly
         run: dotnet publish -c Release -o release --no-restore
 
+      - name: Change base-tag in index.html
+        run: |
+          find release/wwwroot -name "index.html" -exec sed -i 's/<base href="\/"/<base href="\/Money.Web\/"/g' {} +
+
+      - name: Add .nojekyll file
+        run: touch release/wwwroot/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

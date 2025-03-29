@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" style="height: auto;overflow: auto;">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initiaWeb l-scale=1.0" />
+    <title>Money.Web</title>
+    
+    <!-- 기존 리디렉션 스크립트 문제 수정 -->
+    <script type="text/javascript">
+        // index.html이 처음 로드될 때만 실행되어야 함
+        if (window.location.pathname.endsWith('/Money.Web/') || 
+            window.location.pathname.endsWith('/Money.Web')) {
+            // base href를 고려한 상대 경로 사용
+            window.location.href = window.location.origin + '/Money.Web/history';
+        }
+    </script>
+    
+    <!-- 개선된 SPA 라우팅 처리 -->
+    <script type="text/javascript">
+        // GitHub Pages SPA 라우팅 핸들러
+        (function() {
+            const search = window.location.search;
+            const path = search.match(/path=([^&]*)/);
+            const query = search.match(/query=([^&]*)/);
+            const hash = search.match(/hash=([^&]*)/);
+            const repo = 'Money.Web';
+            
+            // 404.html에서 리디렉션된 경우 URL 복원
+            if (path) {
+                let newUrl = window.location.protocol + '//' + window.location.host + 
+                            '/' + repo + '/' + decodeURIComponent(path[1]);
+                
+                if (query) {
+                    newUrl += '?' + decodeURIComponent(query[1]);
+                }
+                
+                if (hash) {
+                    newUrl += '#' + decodeURIComponent(hash[1]);
+                }
+                
+                window.history.replaceState(null, null, newUrl);
+            }
+            
+            // 루트 경로에서 history로 리디렉션 (경로가 정확히 /Money.Web/인 경우만)
+            if (window.location.pathname === '/' + repo + '/' && !window.location.search) {
+                window.location.href = '/' + repo + '/history';
+            }
+        })();
+    </script>
+    
+    <base href="/Money.Web/" />
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+<!--    <link href="Money.Web.styles.css" rel="stylesheet" />-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
+</head>
+
+<body style="background-color:var(--mud-palette-background-gray">
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="js/index.bundle.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+</body>
+
+</html>

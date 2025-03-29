@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Money.Shared", "Money.Shared\Money.Shared.csproj", "{414B5812-511D-4F4A-8772-0918B32EAB0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Money.Web", "Money.Web\Money.Web.csproj", "{22CB2D9C-E238-44FE-939B-3DAE9BF235F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{414B5812-511D-4F4A-8772-0918B32EAB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{414B5812-511D-4F4A-8772-0918B32EAB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{414B5812-511D-4F4A-8772-0918B32EAB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{414B5812-511D-4F4A-8772-0918B32EAB0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22CB2D9C-E238-44FE-939B-3DAE9BF235F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22CB2D9C-E238-44FE-939B-3DAE9BF235F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22CB2D9C-E238-44FE-939B-3DAE9BF235F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22CB2D9C-E238-44FE-939B-3DAE9BF235F7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

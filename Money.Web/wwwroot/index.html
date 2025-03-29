@@ -5,6 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initiaWeb l-scale=1.0" />
     <title>Money.Web</title>
+    
+    <!-- GitHub Pages SPA 리디렉션 스크립트 추가 -->
+    <script type="text/javascript">
+        // GitHub Pages에서 SPA 라우팅을 위한 리디렉션
+        var segmentCount = 1; // 저장소 이름 세그먼트 수
+        var l = window.location;
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
+            l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
+    </script>
+    
     <base href="/Money.Web/" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />

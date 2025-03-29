@@ -16,24 +16,35 @@
         }
     </script>
     
-    <!-- SPA 리디렉션 처리 스크립트 -->
+    <!-- 개선된 SPA 라우팅 처리 -->
     <script type="text/javascript">
-        // URL의 쿼리 파라미터에서 경로 정보 가져오기
+        // GitHub Pages SPA 라우팅 핸들러
         (function() {
-            var path = window.location.search.match(/path=([^&]*)/);
-            var query = window.location.search.match(/query=([^&]*)/);
+            const search = window.location.search;
+            const path = search.match(/path=([^&]*)/);
+            const query = search.match(/query=([^&]*)/);
+            const hash = search.match(/hash=([^&]*)/);
+            const repo = 'Money.Web';
             
+            // 404.html에서 리디렉션된 경우 URL 복원
             if (path) {
-                // 원래 경로로 URL 복원
-                var newUrl = window.location.protocol + '//' + window.location.host + 
-                             window.location.pathname.split('?')[0] + '/' + 
-                             path[1].replace(/&/g, '~and~');
+                let newUrl = window.location.protocol + '//' + window.location.host + 
+                            '/' + repo + '/' + decodeURIComponent(path[1]);
                 
                 if (query) {
-                    newUrl += '?' + query[1].replace(/&/g, '~and~');
+                    newUrl += '?' + decodeURIComponent(query[1]);
+                }
+                
+                if (hash) {
+                    newUrl += '#' + decodeURIComponent(hash[1]);
                 }
                 
                 window.history.replaceState(null, null, newUrl);
+            }
+            
+            // 루트 경로에서 history로 리디렉션 (경로가 정확히 /Money.Web/인 경우만)
+            if (window.location.pathname === '/' + repo + '/' && !window.location.search) {
+                window.location.href = '/' + repo + '/history';
             }
         })();
     </script>

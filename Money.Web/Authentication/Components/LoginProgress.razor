@@ -23,7 +23,7 @@
         if (string.IsNullOrWhiteSpace(AccessToken) || AccessToken!.Equals("null"))
         {
             if(AuthState.IsAuthenticated) 
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo("login");
         } 
         else  // 로그인 콜백인 경우. (AccessToken 파라미터 있음)
         {
@@ -33,7 +33,7 @@
                 .NotifyAuthenticationChanged();
         }
         
-        NavigationManager.NavigateTo("/history");
+        NavigationManager.NavigateTo("history");
     }
     
     private async Task SetTokenAsync(string accessToken)

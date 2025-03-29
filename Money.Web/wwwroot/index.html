@@ -16,6 +16,28 @@
         }
     </script>
     
+    <!-- SPA 리디렉션 처리 스크립트 -->
+    <script type="text/javascript">
+        // URL의 쿼리 파라미터에서 경로 정보 가져오기
+        (function() {
+            var path = window.location.search.match(/path=([^&]*)/);
+            var query = window.location.search.match(/query=([^&]*)/);
+            
+            if (path) {
+                // 원래 경로로 URL 복원
+                var newUrl = window.location.protocol + '//' + window.location.host + 
+                             window.location.pathname.split('?')[0] + '/' + 
+                             path[1].replace(/&/g, '~and~');
+                
+                if (query) {
+                    newUrl += '?' + query[1].replace(/&/g, '~and~');
+                }
+                
+                window.history.replaceState(null, null, newUrl);
+            }
+        })();
+    </script>
+    
     <base href="/Money.Web/" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
